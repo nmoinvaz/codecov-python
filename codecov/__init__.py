@@ -399,6 +399,12 @@ def main(*argv, **kwargs):
         help="Specify a custom pr number, provided automatically for supported CI companies",
     )
     advanced.add_argument("--tag", default=None, help="Git tag")
+    advanced.add_argument(
+        "--tries",
+        default=8,
+        type=int,
+        help="Specify the number of attempts to make when uploading coverage report"
+    )
 
     enterprise = parser.add_argument_group(
         "======================== Enterprise ========================"
@@ -1099,9 +1105,9 @@ def main(*argv, **kwargs):
             write("    Compressed contents to {0} bytes".format(len(reports_gzip)))
 
             s3 = None
-            trys = 0
-            while trys < 3:
-                trys += 1
+            tries = 0
+            while tries < codecov.tries:
+                tries += 1
                 if "s3" not in codecov.disable:
                     try:
                         write("    Pinging Codecov...")
@@ -1161,9 +1167,8 @@ def main(*argv, **kwargs):
                     result = res.text
                     return
 
-                write("    Retrying... in %ds" % (trys * 30))
-                sleep(trys * 30)
-
+                write("    Retrying... in %ds" % (tries * 30))
+                sleep(tries * 30)
     except Exception as e:
         write("Error: " + str(e))
         if kwargs.get("debug"):
