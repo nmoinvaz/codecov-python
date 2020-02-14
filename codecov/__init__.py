@@ -1157,7 +1157,7 @@ def main(*argv, **kwargs):
                         write("    " + result)
                         uploaded = True
                     else:
-                        write("    Direct to s3 failed. Using backup v2 endpoint.")
+                        write("    Direct to s3 failed with %d. Using backup v2 endpoint." % (res.status_code))
 
                 except (requests.exceptions.RequestException, requests.urllib3.exceptions.HTTPError):
                     write("    Direct to s3 failed. Using backup v2 endpoint.")
